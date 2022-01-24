@@ -7,6 +7,7 @@ const ASSET_MANAGER = new AssetManager();
 ASSET_MANAGER.queueDownload("./JapanBackground.jpg");
 ASSET_MANAGER.queueDownload("./spritesheet.png");
 ASSET_MANAGER.queueDownload("./grass_block.png");
+ASSET_MANAGER.queueDownload("./platforms.png");
 
 
 
@@ -19,9 +20,7 @@ ASSET_MANAGER.downloadAll(() => {
 	ctx.imageSmoothingEnabled = false;
 
 	// loads from front to back
-	gameEngine.addEntity(new Ninja(gameEngine, 0, 600));
-	gameEngine.addEntity(new Ground(gameEngine, 0, 750, CANVAS_WIDTH));
-	gameEngine.addEntity(new Background(gameEngine, 0, 0));
+	new SceneManager(gameEngine);
 
 	gameEngine.init(ctx);
 

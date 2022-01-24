@@ -1,5 +1,5 @@
 class Background {
-    constructor(game, x, y,) {
+    constructor(game, x, y) {
         Object.assign(this, {game, x, y});
 
         this.spritesheet = ASSET_MANAGER.getAsset("./JapanBackground.jpg");
