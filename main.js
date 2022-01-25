@@ -9,6 +9,7 @@ ASSET_MANAGER.queueDownload("./spritesheet.png");
 ASSET_MANAGER.queueDownload("./grass_block.png");
 ASSET_MANAGER.queueDownload("./platforms.png");
 ASSET_MANAGER.queueDownload("./platform_block.png");
+ASSET_MANAGER.queueDownload("./iron_block.png");
 
 
 

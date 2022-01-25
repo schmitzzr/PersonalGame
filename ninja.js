@@ -62,9 +62,9 @@ class Ninja {
         this.lastBB = this.BB;
         
         if (this.state == 2) {
-            this.BB = new BoundingBox(this.x + 25, this.y + 40, 30, 32)
+            this.BB = new BoundingBox(this.x + 24, this.y + 40, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH)
         } else { 
-            this.BB = new BoundingBox(this.x + 30, this.y + 10, 20, 62);   
+            this.BB = new BoundingBox(this.x + 24, this.y + 8, PARAMS.BLOCKWIDTH, 2*PARAMS.BLOCKWIDTH);   
         }
     };
 
@@ -182,8 +182,8 @@ class Ninja {
                     }
                     else if (( entity instanceof Platform) // hit side
                         && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
-                        if (that.velocity.x < 0) that.x += 1; // move out of collision
-                        else if (that.velocity.x >= 0) that.x -= 1; // move out of collision
+                        if (that.velocity.x < 0) that.x = entity.BB.right - 24; // move out of collision
+                        else if (that.velocity.x >= 0) that.x = entity.BB.left - 24 - PARAMS.BLOCKWIDTH; // move out of collision
                         that.velocity.x = 0;
                     }
                 }
@@ -191,19 +191,20 @@ class Ninja {
                     if ((entity instanceof Platform) // hit ceiling
                         && ((that.lastBB.top) >= entity.BB.bottom)) { // was below last tick                     
                         that.velocity.y = 0;
+                        that.y = entity.BB.bottom - 8;
                     }
                     else if ((entity instanceof Platform) // hit side
                         && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
-                        if (that.velocity.x < 0) that.x += 1; // move out of collision
-                        else if (that.velocity.x >= 0) that.x -= 1; // move out of collision
+                        if (that.velocity.x < 0) that.x = entity.BB.right - 24; // move out of collision
+                        else if (that.velocity.x >= 0) that.x = entity.BB.left - 24 - PARAMS.BLOCKWIDTH; // move out of collision
                         that.velocity.x = 0;
                     }
                 }
 
                 if ((entity instanceof Border) // hit side
                     && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
-                    if (that.velocity.x < 0) that.x = entity.BB.right - 20; // move out of collision
-                    else if (that.velocity.x >= 0) that.x = entity.BB.left - 2*PARAMS.BLOCKWIDTH; // move out of collision
+                    if (that.velocity.x < 0) that.x = entity.BB.right - 24; // move out of collision
+                    else if (that.velocity.x >= 0) that.x = entity.BB.left - 24 - PARAMS.BLOCKWIDTH; // move out of collision
                     that.velocity.x = 0;
                 }
             //     if (entity instanceof Border && entity.type // hit a visible brick

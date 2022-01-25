@@ -28,7 +28,7 @@ class Border {
     constructor(game, x, y, width, height) {
         Object.assign(this, { game, x, y, width, height });
 
-        //this.spritesheet = ASSET_MANAGER.getAsset("./grass_block.png");
+        this.spritesheet = ASSET_MANAGER.getAsset("./iron_block.png");
 
         this.BB = new BoundingBox(this.x, this.y, this.width, this.height);
         this.leftBB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH * 2);
@@ -39,10 +39,10 @@ class Border {
     };
 
     draw(ctx) {
-        // let brickCount = this.width / PARAMS.BLOCKWIDTH;
-        // for (var i = 0; i < brickCount; i++) {
-        //     ctx.drawImage(this.spritesheet, 0,0, 835,835, this.x + i*PARAMS.BLOCKWIDTH, this.y - this.game.camera.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
-        // }
+        let brickCount = this.height / PARAMS.BLOCKWIDTH;
+        for (var i = 0; i < brickCount; i++) {
+            ctx.drawImage(this.spritesheet, 0,0, 362,362, this.x, this.y + + i*PARAMS.BLOCKWIDTH - this.game.camera.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
+        }
         if (PARAMS.DEBUG) {
             ctx.strokeStyle = 'Red';
             ctx.strokeRect(this.BB.x, this.BB.y - this.game.camera.y, this.BB.width, this.BB.height);
@@ -54,14 +54,12 @@ class Platform {
     constructor(game, x, y, width, height) {
         Object.assign(this, { game, x, y, width, height });
 
-        //this.height = this.width * 0.24;
-
-        this.spritesheet = ASSET_MANAGER.getAsset("./platform_block.png");
+        this.spritesheet = ASSET_MANAGER.getAsset("./iron_block.png");
 
         this.BB = new BoundingBox(this.x, this.y, this.width, this.height);
-        this.leftBB = new BoundingBox(this.x, this.y, this.w, this.height);
-        this.rightBB = new BoundingBox(this.x + this.w, this.w, this.height);
-        this.topBB = new BoundingBox(this.x, this.y, this.w, this.height);
+        // this.leftBB = new BoundingBox(this.x, this.y, this.w, this.height);
+        // this.rightBB = new BoundingBox(this.x + this.w, this.w, this.height);
+        // this.topBB = new BoundingBox(this.x, this.y, this.w, this.height);
     };
 
     update() {
@@ -73,7 +71,7 @@ class Platform {
         let hBrickCount = this.height / PARAMS.BLOCKWIDTH;
         for (var i = 0; i < wBrickCount; i++) {
             for (var j = 0; j < hBrickCount; j++) {
-                ctx.drawImage(this.spritesheet, 0,0, 72, 72, this.x + i*PARAMS.BLOCKWIDTH, this.y + j*PARAMS.BLOCKWIDTH - this.game.camera.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
+                ctx.drawImage(this.spritesheet, 0,0, 362, 362, this.x + i*PARAMS.BLOCKWIDTH, this.y + j*PARAMS.BLOCKWIDTH - this.game.camera.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
             }
         }
         if (PARAMS.DEBUG) {
