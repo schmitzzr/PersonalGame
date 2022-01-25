@@ -69,9 +69,12 @@ class Platform {
 
     draw(ctx) {
 
-        let brickCount = this.width / PARAMS.BLOCKWIDTH;
-        for (var i = 0; i < brickCount; i++) {
-            ctx.drawImage(this.spritesheet, 0,0, 72, 72, this.x + i*PARAMS.BLOCKWIDTH, this.y - this.game.camera.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
+        let wBrickCount = this.width / PARAMS.BLOCKWIDTH;
+        let hBrickCount = this.height / PARAMS.BLOCKWIDTH;
+        for (var i = 0; i < wBrickCount; i++) {
+            for (var j = 0; j < hBrickCount; j++) {
+                ctx.drawImage(this.spritesheet, 0,0, 72, 72, this.x + i*PARAMS.BLOCKWIDTH, this.y + j*PARAMS.BLOCKWIDTH - this.game.camera.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
+            }
         }
         if (PARAMS.DEBUG) {
             ctx.strokeStyle = 'Red';
