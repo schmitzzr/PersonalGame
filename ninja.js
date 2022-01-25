@@ -61,8 +61,11 @@ class Ninja {
     updateBB() {
         this.lastBB = this.BB;
         
-        this.BB = new BoundingBox(this.x + 30, this.y + 10, 20, 62);   
-        
+        if (this.state == 2) {
+            this.BB = new BoundingBox(this.x + 20, this.y + 36, 40, 36)
+        } else { 
+            this.BB = new BoundingBox(this.x + 30, this.y + 10, 20, 62);   
+        }
     };
 
 
@@ -172,89 +175,29 @@ class Ninja {
                 if (that.velocity.y > 0) { // falling
                     if ((entity instanceof Ground || entity instanceof Platform ) // landing
                         && (that.lastBB.bottom) <= entity.BB.top) { // was above last tick
-                        that.y = entity.BB.top - 2 * PARAMS.BLOCKWIDTH;
+                        that.y = entity.BB.top - 72;
                         that.velocity.y === 0;
 
                         if(that.state === 3) that.state = 0; // set state to idle
                         that.updateBB();
                     }
-                }
-                if (that.velocity.y < 0) { // jumping
-                    if ((entity instanceof Platform) // hit ceiling
-                        && ((that.lastBB.top) >= entity.BB.bottom)) { // was below last tick                     
-                        that.velocity.y = 0;
-                    }
-                    if ((entity instanceof Platform) // hit side
+                    else if ((entity instanceof Border || entity instanceof Platform) // hit side
                         && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
                         that.velocity.x = 0;
                     }
                 }
-            //     if (entity instanceof Brick && entity.type // hit a visible brick
-            //         && that.BB.collide(entity.topBB) && that.BB.collide(entity.bottomBB)) { // hit the side
-            //         if (that.BB.collide(entity.leftBB)) {
-            //             that.x = entity.BB.left - PARAMS.BLOCKWIDTH;
-            //             if (that.velocity.x > 0) that.velocity.x = 0;
-            //         } else if (that.BB.collide(entity.rightBB)) {
-            //             that.x = entity.BB.right;
-            //             if (that.velocity.x < 0) that.velocity.x = 0;
-            //         }
-            //         that.updateBB();
-            //     }
-            //     if ((entity instanceof Tube || entity instanceof SideTube || entity instanceof Block || entity instanceof Ground) && that.BB.bottom > entity.BB.top) {
-            //         if (that.BB.collide(entity.leftBB)) {
-            //             that.x = entity.BB.left - PARAMS.BLOCKWIDTH;
-            //             if (that.velocity.x > 0) that.velocity.x = 0;
-            //             if (entity instanceof SideTube && that.game.right)
-            //                 that.game.camera.loadLevel(levelOne, 162.5 * PARAMS.BLOCKWIDTH, 11 * PARAMS.BLOCKWIDTH) 
-            //         } else {
-            //             that.x = entity.BB.right;
-            //             if (that.velocity.x < 0) that.velocity.x = 0;
-            //         }
-            //         that.updateBB();
-            //     }
-            //     if (entity instanceof Mushroom && !entity.emerging) {
-            //         entity.removeFromWorld = true;
-            //         if (entity.type === 'Growth') {
-            //             that.y -= PARAMS.BLOCKWIDTH;
-            //             that.size = 1;
-            //             that.game.addEntity(new Score(that.game, that.x, that.y, 1000));
-            //         } else {
-            //             that.game.camera.lives++;
-            //         }
-            //     }
-            //     if (entity instanceof Flower && !entity.emerging) {
-            //         entity.removeFromWorld = true;
-            //         if (that.size == 1) {
-            //             that.size = 2;
-            //         } else if (that.size == 0) {
-            //             that.size = 1;
-            //         }
-            //     }
-            //     if (entity instanceof Coin) {
-            //         entity.removeFromWorld = true;
-            //         that.game.camera.score += 200;
-            //         that.game.camera.addCoin();
-            //     }
-            //     if (entity instanceof FireBar_Fire) {
-            //         that.die();
-            //     }
-            // }
-
-            // // counting the number of fireballs currently in play
-            // if (entity instanceof Fireball) {
-            //     that.fireballsThrown++;
-            // }
+                if (that.velocity.y <= 0) { // jumping or walking
+                    if ((entity instanceof Platform) // hit ceiling
+                        && ((that.lastBB.top) >= entity.BB.bottom)) { // was below last tick                     
+                        that.velocity.y = 0;
+                    }
+                    else if ((entity instanceof Platform || entity instanceof Border) // hit side
+                        && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
+                        that.velocity.x = 0;
+                    }
+                }
             }
         });
-
-
-
-        
-
-        // if (this.y >= 680)  {  // establish ground for now
-        //     this.y = 680;
-        //     this.state = 0;  //this is fucky
-        // }
 
         // update state
         if (this.state !== 3) {
@@ -269,13 +212,15 @@ class Ninja {
         if (this.velocity.x < 0) this.facing = 1;
         if (this.velocity.x > 0) this.facing = 0;
 
+        //console.log("y =", this.y);
+
     };
     
     draw(ctx) {
-        this.animations[this.state][this.facing].drawFrame(this.game.clockTick, ctx, this.x, this.y, 1);
+        this.animations[this.state][this.facing].drawFrame(this.game.clockTick, ctx, this.x, this.y - this.game.camera.y, 1);
         if (PARAMS.DEBUG) {
             ctx.strokeStyle = 'Red';
-            ctx.strokeRect(this.BB.x, this.BB.y, this.BB.width, this.BB.height);
+            ctx.strokeRect(this.BB.x, this.BB.y -this.game.camera.y, this.BB.width, this.BB.height);
         }
     };
 

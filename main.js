@@ -8,6 +8,7 @@ ASSET_MANAGER.queueDownload("./JapanBackground.jpg");
 ASSET_MANAGER.queueDownload("./spritesheet.png");
 ASSET_MANAGER.queueDownload("./grass_block.png");
 ASSET_MANAGER.queueDownload("./platforms.png");
+ASSET_MANAGER.queueDownload("./platform_block.png");
 
 
 
@@ -19,10 +20,13 @@ ASSET_MANAGER.downloadAll(() => {
 	const ctx = canvas.getContext("2d");
 	ctx.imageSmoothingEnabled = false;
 
-	// loads from front to back
-	new SceneManager(gameEngine);
+	PARAMS.CANVAS_WIDTH = canvas.clientWidth;
+	PARAMS.CANVAS_HEIGHT = canvas.clientHeight;
 
 	gameEngine.init(ctx);
+
+	// loads from front to back
+	new SceneManager(gameEngine);
 
 	gameEngine.start();
 });

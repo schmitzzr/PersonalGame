@@ -13,7 +13,7 @@ class Background {
     };
 
     draw(ctx) {
-        ctx.drawImage(this.spritesheet, 0, 0, 1600, 1200, this.x, this.y, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.drawImage(this.spritesheet, 0, 0, 1600, 1200, this.x, this.y - this.game.camera.y, CANVAS_WIDTH, CANVAS_HEIGHT);
     };
 };
 
