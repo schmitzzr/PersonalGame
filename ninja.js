@@ -1,4 +1,5 @@
 class Ninja {
+
     constructor(game, x, y) {
         Object.assign(this, { game, x, y });
         //this.animator = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 80, 0, 80, 80, 8, 0.1);  // 8 total frames
@@ -15,6 +16,9 @@ class Ninja {
 
         this.velocity = { x: 0, y: 0 };
         this.fallAcc = 562.5;
+
+        this.vOffset = 8;
+        this.hOffset = 24;
 
         this.updateBB();
 
@@ -59,17 +63,21 @@ class Ninja {
     };
 
     updateBB() {
+
         this.lastBB = this.BB;
         
         if (this.state == 2) {
-            this.BB = new BoundingBox(this.x + 24, this.y + 40, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH)
+            this.BB = new BoundingBox(this.x + this.hOffset, this.y + this.vOffset + PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH) //32x32 hitbox
         } else { 
-            this.BB = new BoundingBox(this.x + 24, this.y + 8, PARAMS.BLOCKWIDTH, 2*PARAMS.BLOCKWIDTH);   
+            this.BB = new BoundingBox(this.x + this.hOffset, this.y + this.vOffset, PARAMS.BLOCKWIDTH, 2*PARAMS.BLOCKWIDTH); //32x64 hitbox
         }
     };
 
 
     update() {
+
+        const V_OFFSET = this.vOffset;
+        const H_OFFSET = this.hOffset;
 
         this.left = (this.game.keys["a"] || this.game.keys["ArrowLeft"]);
         this.right = (this.game.keys["d"] || this.game.keys["ArrowRight"]);
@@ -95,7 +103,7 @@ class Ninja {
         //const WALK_FALL_A = 421.875;
         //const RUN_FALL_A = 562.5;
 
-        const MAX_FALL = 1000;
+        const MAX_FALL = 900;
 
         if(this.state != 3) {
             
@@ -175,15 +183,16 @@ class Ninja {
                 if (that.velocity.y > 0) { // falling
                     if ((entity instanceof Ground || entity instanceof Platform ) // landing
                         && (that.lastBB.bottom) <= entity.BB.top) { // was above last tick
-                        that.y = entity.BB.top - 72;
+                        that.y = entity.BB.top - V_OFFSET - 2*PARAMS.BLOCKWIDTH;
+                        that.velocity.y = 0;
 
                         if(that.state === 3) that.state = 0; // set state to idle
                         that.updateBB();
                     }
                     else if (( entity instanceof Platform) // hit side
                         && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
-                        if (that.velocity.x < 0) that.x = entity.BB.right - 24; // move out of collision
-                        else if (that.velocity.x >= 0) that.x = entity.BB.left - 24 - PARAMS.BLOCKWIDTH; // move out of collision
+                        if (that.velocity.x < 0) that.x = entity.BB.right - H_OFFSET; // move out of collision
+                        else if (that.velocity.x >= 0) that.x = entity.BB.left - H_OFFSET - PARAMS.BLOCKWIDTH; // move out of collision
                         that.velocity.x = 0;
                     }
                 }
@@ -191,77 +200,23 @@ class Ninja {
                     if ((entity instanceof Platform) // hit ceiling
                         && ((that.lastBB.top) >= entity.BB.bottom)) { // was below last tick                     
                         that.velocity.y = 0;
-                        that.y = entity.BB.bottom - 8;
+                        that.y = entity.BB.bottom - V_OFFSET;
+
                     }
                     else if ((entity instanceof Platform) // hit side
                         && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
-                        if (that.velocity.x < 0) that.x = entity.BB.right - 24; // move out of collision
-                        else if (that.velocity.x >= 0) that.x = entity.BB.left - 24 - PARAMS.BLOCKWIDTH; // move out of collision
+                        if (that.velocity.x < 0) that.x = entity.BB.right - H_OFFSET; // move out of collision
+                        else if (that.velocity.x >= 0) that.x = entity.BB.left - H_OFFSET - PARAMS.BLOCKWIDTH; // move out of collision
                         that.velocity.x = 0;
                     }
                 }
 
-                if ((entity instanceof Border) // hit side
+                if ((entity instanceof Border) // hit side of canvas
                     && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
-                    if (that.velocity.x < 0) that.x = entity.BB.right - 24; // move out of collision
-                    else if (that.velocity.x >= 0) that.x = entity.BB.left - 24 - PARAMS.BLOCKWIDTH; // move out of collision
+                    if (that.velocity.x < 0) that.x = entity.BB.right - H_OFFSET; // move out of collision
+                    else if (that.velocity.x >= 0) that.x = entity.BB.left - H_OFFSET - PARAMS.BLOCKWIDTH; // move out of collision
                     that.velocity.x = 0;
                 }
-            //     if (entity instanceof Border && entity.type // hit a visible brick
-            //         && that.BB.collide(entity.topBB) && that.BB.collide(entity.bottomBB)) { // hit the side
-            //         if (that.BB.collide(entity.leftBB)) {
-            //             that.x = entity.BB.left - PARAMS.BLOCKWIDTH;
-            //             if (that.velocity.x > 0) that.velocity.x = 0;
-            //         } else if (that.BB.collide(entity.rightBB)) {
-            //             that.x = entity.BB.right;
-            //             if (that.velocity.x < 0) that.velocity.x = 0;
-            //         }
-            //         that.updateBB();
-            //     }
-            //     if ((entity instanceof Tube || entity instanceof SideTube || entity instanceof Block || entity instanceof Ground) && that.BB.bottom > entity.BB.top) {
-            //         if (that.BB.collide(entity.leftBB)) {
-            //             that.x = entity.BB.left - PARAMS.BLOCKWIDTH;
-            //             if (that.velocity.x > 0) that.velocity.x = 0;
-            //             if (entity instanceof SideTube && that.game.right)
-            //                 that.game.camera.loadLevel(levelOne, 162.5 * PARAMS.BLOCKWIDTH, 11 * PARAMS.BLOCKWIDTH) 
-            //         } else {
-            //             that.x = entity.BB.right;
-            //             if (that.velocity.x < 0) that.velocity.x = 0;
-            //         }
-            //         that.updateBB();
-            //     }
-            //     if (entity instanceof Mushroom && !entity.emerging) {
-            //         entity.removeFromWorld = true;
-            //         if (entity.type === 'Growth') {
-            //             that.y -= PARAMS.BLOCKWIDTH;
-            //             that.size = 1;
-            //             that.game.addEntity(new Score(that.game, that.x, that.y, 1000));
-            //         } else {
-            //             that.game.camera.lives++;
-            //         }
-            //     }
-            //     if (entity instanceof Flower && !entity.emerging) {
-            //         entity.removeFromWorld = true;
-            //         if (that.size == 1) {
-            //             that.size = 2;
-            //         } else if (that.size == 0) {
-            //             that.size = 1;
-            //         }
-            //     }
-            //     if (entity instanceof Coin) {
-            //         entity.removeFromWorld = true;
-            //         that.game.camera.score += 200;
-            //         that.game.camera.addCoin();
-            //     }
-            //     if (entity instanceof FireBar_Fire) {
-            //         that.die();
-            //     }
-            // }
-
-            // // counting the number of fireballs currently in play
-            // if (entity instanceof Fireball) {
-            //     that.fireballsThrown++;
-            // }
             }
         });
 
@@ -283,10 +238,10 @@ class Ninja {
     };
     
     draw(ctx) {
-        this.animations[this.state][this.facing].drawFrame(this.game.clockTick, ctx, this.x, this.y - this.game.camera.y, 1);
+        this.animations[this.state][this.facing].drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x, this.y - this.game.camera.y, 1);
         if (PARAMS.DEBUG) {
             ctx.strokeStyle = 'Red';
-            ctx.strokeRect(this.BB.x, this.BB.y -this.game.camera.y, this.BB.width, this.BB.height);
+            ctx.strokeRect(this.BB.x - this.game.camera.x, this.BB.y -this.game.camera.y, this.BB.width, this.BB.height);
         }
     };
 

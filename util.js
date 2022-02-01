@@ -59,7 +59,7 @@ const getDistance = (p1, p2) => {
 };
 
 const PARAMS = {
-    DEBUG: true,
+    DEBUG: false,
     SCALE: 1,
     BITWIDTH: 32
 };

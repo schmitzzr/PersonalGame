@@ -10,6 +10,8 @@ ASSET_MANAGER.queueDownload("./grass_block.png");
 ASSET_MANAGER.queueDownload("./platforms.png");
 ASSET_MANAGER.queueDownload("./platform_block.png");
 ASSET_MANAGER.queueDownload("./iron_block.png");
+ASSET_MANAGER.queueDownload("./background_block.png");
+ASSET_MANAGER.queueDownload("./spotlight.png");
 
 
 
@@ -19,7 +21,7 @@ ASSET_MANAGER.downloadAll(() => {
 
 	const canvas = document.getElementById("gameWorld");
 	const ctx = canvas.getContext("2d");
-	ctx.imageSmoothingEnabled = false;
+	ctx.imageSmoothingEnabled = true;
 
 	PARAMS.CANVAS_WIDTH = canvas.clientWidth;
 	PARAMS.CANVAS_HEIGHT = canvas.clientHeight;
