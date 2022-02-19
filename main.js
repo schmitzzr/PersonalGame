@@ -11,12 +11,19 @@ ASSET_MANAGER.queueDownload("./platforms.png");
 ASSET_MANAGER.queueDownload("./platform_block.png");
 ASSET_MANAGER.queueDownload("./iron_block.png");
 ASSET_MANAGER.queueDownload("./background_block.png");
+ASSET_MANAGER.queueDownload("./metal_background.jpg");
+ASSET_MANAGER.queueDownload("./city_background.png");
 ASSET_MANAGER.queueDownload("./spotlight.png");
+ASSET_MANAGER.queueDownload("./title_screen.png");
 
+// music
+ASSET_MANAGER.queueDownload("./music/HighClassHeist.mp3");
 
 
 ASSET_MANAGER.downloadAll(() => {
 	
+	ASSET_MANAGER.autoRepeat("./music/HighClassHeist.mp3");
+
 	PARAMS.BLOCKWIDTH = PARAMS.BITWIDTH * PARAMS.SCALE;
 
 	const canvas = document.getElementById("gameWorld");

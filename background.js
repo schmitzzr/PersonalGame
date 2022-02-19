@@ -34,3 +34,37 @@ class Background {
     };
 };
 
+class MainBackground {
+    constructor(game, x, y, width, height, levelHeight) {
+        Object.assign(this, { game, x, width, height, levelHeight});
+
+        this.y = PARAMS.CANVAS_HEIGHT/PARAMS.BLOCKWIDTH - (this.levelHeight - y);
+        this.spritesheet = ASSET_MANAGER.getAsset("./metal_background.jpg");
+    };
+
+    update() {
+    };
+
+    draw(ctx) {
+        ctx.drawImage(this.spritesheet, 0,0, 1906, 1191, this.x * PARAMS.BLOCKWIDTH - this.game.camera.x, this.y*PARAMS.BLOCKWIDTH - this.game.camera.y, 
+            this.width * PARAMS.BLOCKWIDTH, this.height * PARAMS.BLOCKWIDTH);
+    };
+};
+
+class DistantBackground {
+    constructor(game, x, y, width, height, levelHeight) {
+        Object.assign(this, { game, x, width, height, levelHeight});
+
+        this.y = PARAMS.CANVAS_HEIGHT/PARAMS.BLOCKWIDTH - (this.levelHeight - y);
+        this.spritesheet = ASSET_MANAGER.getAsset("./city_background.png");
+    };
+
+    update() {
+    };
+
+    draw(ctx) {
+        ctx.drawImage(this.spritesheet, 0,0, 1906, 1191, this.x * PARAMS.BLOCKWIDTH, this.y*PARAMS.BLOCKWIDTH, 
+            this.width * PARAMS.BLOCKWIDTH, this.height * PARAMS.BLOCKWIDTH);
+    };
+}
+

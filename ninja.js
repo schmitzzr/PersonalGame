@@ -12,6 +12,8 @@ class Ninja {
         this.left = false;
         this.right = false;
         this.jump = false;
+        this.crawl = false;
+        this.interact = false;
         this.doublejump = false;
 
         this.velocity = { x: 0, y: 0 };
@@ -19,6 +21,8 @@ class Ninja {
 
         this.vOffset = 8;
         this.hOffset = 24;
+
+        this.stayCrawling = false;
 
         this.updateBB();
 
@@ -82,22 +86,22 @@ class Ninja {
         this.left = (this.game.keys["a"] || this.game.keys["ArrowLeft"]);
         this.right = (this.game.keys["d"] || this.game.keys["ArrowRight"]);
         this.jump = this.game.keys["w"] ||  this.game.keys[" "] || this.game.keys["ArrowUp"];
+        this.crawl = (this.game.keys["s"] || this.game.keys["S"] || this.game.keys["ArrowDown"]);
+        this.interact = (this.game.keys["e"] || this.game.keys["E"]);
 
         const TICK = this.game.clockTick;
 
         const MIN_WALK = 25;
-        const MAX_WALK = 500;
-        const MAX_CRAWL = 25;
+        const MAX_WALK = 250;
+        const MAX_CRAWL = 60;
         //const MAX_RUN = 153.75;
-        const ACC_WALK = 250;
+        const ACC_WALK = 750;
         //const ACC_RUN = 200.390625;
         const ACC_CRAWL = 37.5;
-        const DEC_REL = 1000;
-        const DEC_SKID = 365.625;
-        const MIN_SKID = 33.75;
+        const DEC_REL = 2000;
 
-        const STOP_FALL = 1575;
-        const WALK_FALL = 1800;
+        const STOP_FALL = 2200;
+        const WALK_FALL = 2100;
         //const RUN_FALL = 2025;
         //const STOP_FALL_A = 450;
         //const WALK_FALL_A = 421.875;
@@ -121,14 +125,14 @@ class Ninja {
             else if (Math.abs(this.velocity.x) >= MIN_WALK) {
                 if (this.facing == 0) {
                     if (this.right && !this.left) { // walking right
-                        if (this.game.keys["s"]) {
+                        if (this.crawl) {
                             this.velocity.x += ACC_CRAWL * TICK;
                         } else this.velocity.x += ACC_WALK * TICK; 
                     } else this.velocity.x -= DEC_REL * TICK;
                 }
                 if (this.facing == 1) {
                     if (this.left && !this.right) { // walking right
-                        if (this.game.keys["s"]) {
+                        if (this.crawl) {
                             this.velocity.x -= ACC_CRAWL * TICK;
                         } else this.velocity.x -= ACC_WALK * TICK;
                     } else this.velocity.x += DEC_REL * TICK;
@@ -165,8 +169,8 @@ class Ninja {
         if (this.velocity.y >= MAX_FALL) this.velocity.y = MAX_FALL;
         if (this.velocity.y <= -MAX_FALL) this.velocity.y = -MAX_FALL;
 
-        if (this.velocity.x >= MAX_CRAWL && this.game.keys["s"]) this.velocity.x = MAX_CRAWL;
-        if (this.velocity.x <= -MAX_CRAWL && this.game.keys["s"]) this.velocity.x = -MAX_CRAWL;
+        if (this.velocity.x >= MAX_CRAWL && (this.crawl || this.stayCrawling)) this.velocity.x = MAX_CRAWL;
+        if (this.velocity.x <= -MAX_CRAWL && (this.crawl || this.stayCrawling)) this.velocity.x = -MAX_CRAWL;
         if (this.velocity.x >= MAX_WALK) this.velocity.x = MAX_WALK;
         if (this.velocity.x <= -MAX_WALK) this.velocity.x = -MAX_WALK;
 
@@ -210,7 +214,9 @@ class Ninja {
                         that.velocity.x = 0;
                     }
                 }
-
+                if (entity instanceof Light) { // hit side of canvas
+                    console.log("you have died");
+                }
                 if ((entity instanceof Border) // hit side of canvas
                     && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
                     if (that.velocity.x < 0) that.x = entity.BB.right - H_OFFSET; // move out of collision
@@ -220,9 +226,23 @@ class Ninja {
             }
         });
 
+        if (!this.crawl && this.state === 2) {
+            this.state = 1;
+            this.updateBB();
+            this.stayCrawling = false;
+
+            this.game.entities.forEach(function (entity) {
+                if ((entity instanceof Platform)
+                    && (entity.BB && that.BB.collide(entity.BB))) {
+                    that.state = 2;
+                    that.stayCrawling = true;
+                } 
+            });
+        } 
+
         // update state
         if (this.state !== 3) {
-            if (this.game.keys["s"]) this.state = 2;
+            if (this.crawl || this.stayCrawling) this.state = 2;
             else if (Math.abs(this.velocity.x) >= MIN_WALK) this.state = 1;
             else this.state = 0;
         } else {

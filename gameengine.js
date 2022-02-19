@@ -13,7 +13,7 @@ class GameEngine {
         this.click = null;
         this.mouse = null;
         this.wheel = null;
-        this.keys = {}; //access gameEngine.keys["KEYCODE HERE"] to get whether a key has been pressed or not in that moment
+        this.keys = {}; //access this.game.keys["KEYCODE HERE"] to get whether a key has been pressed or not in that moment
         this.jump = false;
 
         // THE KILL SWITCH
