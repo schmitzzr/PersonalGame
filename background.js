@@ -52,10 +52,10 @@ class MainBackground {
 };
 
 class DistantBackground {
-    constructor(game, x, y, width, height, levelHeight) {
-        Object.assign(this, { game, x, width, height, levelHeight});
+    constructor(game, x, y, levelHeight) {
+        Object.assign(this, { game, x, y, levelHeight});
 
-        this.y = PARAMS.CANVAS_HEIGHT/PARAMS.BLOCKWIDTH - (this.levelHeight - y);
+        //this.y = PARAMS.CANVAS_HEIGHT/PARAMS.BLOCKWIDTH - (this.levelHeight - y);
         this.spritesheet = ASSET_MANAGER.getAsset("./city_background.png");
     };
 
@@ -63,8 +63,8 @@ class DistantBackground {
     };
 
     draw(ctx) {
-        ctx.drawImage(this.spritesheet, 0,0, 1906, 1191, this.x * PARAMS.BLOCKWIDTH, this.y*PARAMS.BLOCKWIDTH, 
-            this.width * PARAMS.BLOCKWIDTH, this.height * PARAMS.BLOCKWIDTH);
+        ctx.drawImage(this.spritesheet, 0,0, 1920, 1080, this.x * PARAMS.BLOCKWIDTH, this.y * PARAMS.BLOCKWIDTH, 
+            1024, 768);
     };
 }
 

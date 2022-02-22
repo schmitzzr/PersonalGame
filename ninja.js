@@ -21,19 +21,23 @@ class Ninja {
 
         this.vOffset = 8;
         this.hOffset = 24;
+        this.idleClock = 0;
+
+        this.caught = false;
 
         this.stayCrawling = false;
+
+        this.spritesheet = ASSET_MANAGER.getAsset("./spritesheet.png");
 
         this.updateBB();
 
         // ninja's animations
         this.animations = [];
         this.loadAnimations();
-
     };
 
     loadAnimations() {
-        for (var i = 0; i < 4; i++) {  // 4 states
+        for (var i = 0; i < 5; i++) {  // 5 states
             this.animations.push([]);
             for (var j = 0; j < 2; j++) {  // two directions
                 this.animations[i].push([]);
@@ -41,28 +45,31 @@ class Ninja {
         }
         
         // idle look up -> state = 0
-        this.animations[0][0] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 0, 640, 80, 80, 7, 0.2, 0, false, true);
+        this.animations[0][0] = new Animator(this.spritesheet, 0, 640, 80, 80, 7, 0.2, 0, false, true);
+
+        this.animations[0][1] = new Animator(this.spritesheet, 1520, 640, 80, 80, 7, 0.2, 0, true, true);
 
         // walking -> state = 1
-        this.animations[1][0] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 80, 0, 80, 80, 8, 0.1, 0, false, true);
+        this.animations[1][0] = new Animator(this.spritesheet, 80, 0, 80, 80, 8, 0.1, 0, false, true);
+
+        this.animations[1][1] = new Animator(this.spritesheet, 1360, 0, 80, 80, 8, 0.1, 0, true, true);
         
         // crawling -> state = 2
-        this.animations[2][0] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 400, 80, 80, 80, 7, 0.1, 0, false, true);
+        this.animations[2][0] = new Animator(this.spritesheet, 400, 80, 80, 80, 7, 0.1, 0, false, true);
+
+        this.animations[2][1] = new Animator(this.spritesheet, 1120, 80, 80, 80, 7, 0.1, 0, true, true);
 
         // idle jump because no animation yet -> state = 3
-        this.animations[3][0] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 560, 320, 80, 80, 1, 0.1, 0, false, true);
+        this.animations[3][0] = new Animator(this.spritesheet, 560, 320, 80, 80, 1, 0.1, 0, false, true); // facing = 0
 
-        // idle jump because no animation yet -> state = 3, facing = 1
-        this.animations[3][1] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 1520, 320, 80, 80, 1, 0.1, 0, false, true);
+        this.animations[3][1] = new Animator(this.spritesheet, 1440, 320, 80, 80, 1, 0.1, 0, true, true); // facing = 1
 
-        // idle look up -> state = 0, facing = 1
-        this.animations[0][1] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 1520, 640, 80, 80, 7, 0.2, 0, true, true);
 
-        // walking left -> state = 1, facing = 1
-        this.animations[1][1] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 1360, 0, 80, 80, 8, 0.1, 0, true, true);
+        // dead -> state = 4
+        this.animations[4][0] = new Animator(this.spritesheet, 880, 720, 80, 80, 1, 0.1, 0, false, true);
 
-        // crawling left -> state = 2, facing = 1
-        this.animations[2][1] = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 1120, 80, 80, 80, 7, 0.1, 0, true, true);
+        this.animations[4][1] = new Animator(this.spritesheet, 1120, 720, 80, 80, 1, 0.1, 0, false, true);
+        
         
     };
 
@@ -94,71 +101,72 @@ class Ninja {
         const MIN_WALK = 25;
         const MAX_WALK = 250;
         const MAX_CRAWL = 60;
-        //const MAX_RUN = 153.75;
+
         const ACC_WALK = 750;
-        //const ACC_RUN = 200.390625;
+
         const ACC_CRAWL = 37.5;
         const DEC_REL = 2000;
 
         const STOP_FALL = 2200;
         const WALK_FALL = 2100;
-        //const RUN_FALL = 2025;
-        //const STOP_FALL_A = 450;
-        //const WALK_FALL_A = 421.875;
-        //const RUN_FALL_A = 562.5;
+
 
         const MAX_FALL = 900;
 
-        if(this.state != 3) {
-            
-            if (Math.abs(this.velocity.x) < MIN_WALK) {
-                this.velocity.x = 0;
-                //this.state = 0;
-                if (this.left) {
-                    this.velocity.x -= MIN_WALK;
-                }
-                if (this.right) {
-                    this.velocity.x += MIN_WALK;
-                }
-            }
-
-            else if (Math.abs(this.velocity.x) >= MIN_WALK) {
-                if (this.facing == 0) {
-                    if (this.right && !this.left) { // walking right
-                        if (this.crawl) {
-                            this.velocity.x += ACC_CRAWL * TICK;
-                        } else this.velocity.x += ACC_WALK * TICK; 
-                    } else this.velocity.x -= DEC_REL * TICK;
-                }
-                if (this.facing == 1) {
-                    if (this.left && !this.right) { // walking right
-                        if (this.crawl) {
-                            this.velocity.x -= ACC_CRAWL * TICK;
-                        } else this.velocity.x -= ACC_WALK * TICK;
-                    } else this.velocity.x += DEC_REL * TICK;
-                }
-            }
-
-            if (this.jump) {
-                if (Math.abs(this.velocity.x) < 16) {
-                    this.velocity.y = -1200;
-                    this.fallAcc = STOP_FALL;
-                }
-                else {
-                    this.velocity.y = -1200;
-                    this.fallAcc = WALK_FALL;
-                }
-                this.doublejump = true;
-                this.state = 3;
-            }
-            
+        if(this.caught) {
+            this.velocity.x = 0;
         } else {
-            if (this.right && !this.left) {
-                this.velocity.x += ACC_WALK * TICK;
-            } else if (this.left && !this.right) {
-                this.velocity.x -= ACC_WALK * TICK;
+            if(this.state < 3) {
+                
+                if (Math.abs(this.velocity.x) < MIN_WALK) {
+                    this.velocity.x = 0;
+                    //this.state = 0;
+                    if (this.left) {
+                        this.velocity.x -= MIN_WALK;
+                    }
+                    if (this.right) {
+                        this.velocity.x += MIN_WALK;
+                    }
+                }
+
+                else if (Math.abs(this.velocity.x) >= MIN_WALK) {
+                    if (this.facing == 0) {
+                        if (this.right && !this.left) { // walking right
+                            if (this.crawl) {
+                                this.velocity.x += ACC_CRAWL * TICK;
+                            } else this.velocity.x += ACC_WALK * TICK; 
+                        } else this.velocity.x -= DEC_REL * TICK;
+                    }
+                    if (this.facing == 1) {
+                        if (this.left && !this.right) { // walking right
+                            if (this.crawl) {
+                                this.velocity.x -= ACC_CRAWL * TICK;
+                            } else this.velocity.x -= ACC_WALK * TICK;
+                        } else this.velocity.x += DEC_REL * TICK;
+                    }
+                }
+
+                if (this.jump) {
+                    if (Math.abs(this.velocity.x) < 16) {
+                        this.velocity.y = -1200;
+                        this.fallAcc = STOP_FALL;
+                    }
+                    else {
+                        this.velocity.y = -1200;
+                        this.fallAcc = WALK_FALL;
+                    }
+                    this.doublejump = true;
+                    this.state = 3;
+                }
+                
             } else {
-                // do nothing
+                if (this.right && !this.left) {
+                    this.velocity.x += ACC_WALK * TICK;
+                } else if (this.left && !this.right) {
+                    this.velocity.x -= ACC_WALK * TICK;
+                } else {
+                    // do nothing
+                }
             }
         }
 
@@ -214,8 +222,9 @@ class Ninja {
                         that.velocity.x = 0;
                     }
                 }
-                if (entity instanceof Light) { // hit side of canvas
-                    console.log("you have died");
+                if (entity instanceof Light) { // hit light
+                    that.caught = true;
+                    console.log("caught status:", that.caught);
                 }
                 if ((entity instanceof Border) // hit side of canvas
                     && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
@@ -244,10 +253,9 @@ class Ninja {
         if (this.state !== 3) {
             if (this.crawl || this.stayCrawling) this.state = 2;
             else if (Math.abs(this.velocity.x) >= MIN_WALK) this.state = 1;
+            else if (this.caught) this.state = 4;
             else this.state = 0;
-        } else {
-
-        }
+        } 
 
         // update direction
         if (this.velocity.x < 0) this.facing = 1;

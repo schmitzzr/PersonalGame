@@ -18,11 +18,12 @@ ASSET_MANAGER.queueDownload("./title_screen.png");
 
 // music
 ASSET_MANAGER.queueDownload("./music/HighClassHeist.mp3");
+ASSET_MANAGER.queueDownload("./music/LastCall.mp3");
 
 
 ASSET_MANAGER.downloadAll(() => {
 	
-	ASSET_MANAGER.autoRepeat("./music/HighClassHeist.mp3");
+	//ASSET_MANAGER.autoRepeat("./music/HighClassHeist.mp3");
 
 	PARAMS.BLOCKWIDTH = PARAMS.BITWIDTH * PARAMS.SCALE;
 

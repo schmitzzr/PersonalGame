@@ -10,10 +10,14 @@ class SceneManager {
         this.lives = 3;
 
         this.title = true;
+        this.level = null;
+        this.levelLabel = null;
 
         this.ninja = new Ninja(game, 25, PARAMS.CANVAS_HEIGHT);
 
         this.levelLoaded = false;
+
+        //this.loadLevelOne(3 * PARAMS.BLOCKWIDTH, 3 * PARAMS.BLOCKWIDTH, false, true);
 
     };
 
@@ -23,13 +27,45 @@ class SceneManager {
         });
     }
 
-    loadLevelOne() { //less important is loaded first, then mains. 
+    loadLevel(level, x, y, transition, title) {
+        this.title = title;
+        this.clearEntities();
+        switch(level) {
+            case 1: 
+                this.levelLabel = "BREAKING AND ENTERING";
+                break;
+            default: this.levelLabel = "UNTITLED";
+        }
+
+        if (transition) {
+            this.game.addEntity(new TransitionScreen(this.game, level, x, y, title));
+        } else {
+            switch(level) {
+                case 1: 
+                    this.loadLevelOne(x, y, title);
+                    break;
+                default: this.loadLevelOne(x, y, title);
+            }
+        }
         
-        const LEVEL_ONE_HEIGHT = 32;
-        const LEVEL_ONE_WIDTH = 128;
+        
+    }
+
+    loadLevelOne(x, y, title) { //less important is loaded first, then mains. 
+        
+        this.title = title;
+        this.clearEntities();
+        //this.x = 0;
+
+        const LEVEL_ONE_HEIGHT = PARAMS.BLOCKWIDTH;
+        const LEVEL_ONE_WIDTH = PARAMS.BLOCKWIDTH * 4;
 
         //music
-        ASSET_MANAGER.playAsset("./music/HighClassHeist.mp3");
+        if (!this.ninja.caught) ASSET_MANAGER.playAsset("./music/HighClassHeist.mp3");
+        else {
+            ASSET_MANAGER.pauseBackgroundMusic();
+            ASSET_MANAGER.playAsset("./music/LastCall.mp3");
+        }
 
         //borders
         this.game.addEntity(new Platform(this.game, 0, 0, LEVEL_ONE_WIDTH, 1, LEVEL_ONE_HEIGHT));
@@ -56,13 +92,14 @@ class SceneManager {
 
 	    this.game.addEntity(new Ground(this.game, 0, PARAMS.CANVAS_HEIGHT, PARAMS.CANVAS_WIDTH));
 
+        this.ninja.x = x;
+        this.ninja.y = y;
         this.game.addEntity(this.ninja);
-        this.ninja.x = 3*PARAMS.BLOCKWIDTH;
-        this.ninja.y = 3*PARAMS.BLOCKWIDTH;
 	    //this.game.addEntity(new Background(this.game, 0, 0));
 
         //this.game.addEntity(new Background(this.game, 0, 0, LEVEL_ONE_WIDTH, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new MainBackground(this.game, 0, 0, LEVEL_ONE_WIDTH, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new DistantBackground(this.game, 0, 0, LEVEL_ONE_HEIGHT));
     };
 
     updateAudio() {
@@ -113,13 +150,14 @@ class SceneManager {
             this.title = false;
             if (!this.levelLoaded) {
                 this.levelLoaded = true;
-                this.loadLevelOne();
+                this.ninja = new Ninja(this.game, 3*PARAMS.BLOCKWDITH, 3*PARAMS.BLOCKWIDTH);
+                this.loadLevel(1, 3 * PARAMS.BLOCKWIDTH, 3 * PARAMS.BLOCKWIDTH, true, false);
             }
         }
 
         let midpoint = {x : PARAMS.CANVAS_WIDTH / 2, y: PARAMS.CANVAS_HEIGHT / 2};
 
-        this.y = this.ninja.y - midpoint.y - 4 * PARAMS.BLOCKWIDTH;
+        this.y = this.ninja.y - midpoint.y - 3 * PARAMS.BLOCKWIDTH;
         this.x = this.ninja.x - midpoint.y + 4 * PARAMS.BLOCKWIDTH;
 
     };
