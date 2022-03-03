@@ -4,6 +4,8 @@ class Ninja {
         Object.assign(this, { game, x, y });
         //this.animator = new Animator(ASSET_MANAGER.getAsset("./spritesheet.png"), 80, 0, 80, 80, 8, 0.1);  // 8 total frames
 
+        this.game.ninja = this;
+
         this.speed = 50;
 
         this.facing = 0;
@@ -22,6 +24,9 @@ class Ninja {
         this.vOffset = 8;
         this.hOffset = 24;
         this.idleClock = 0;
+
+        this.hasKey = false;
+        this.key = null;
 
         this.caught = false;
 
@@ -115,6 +120,7 @@ class Ninja {
 
         if(this.caught) {
             this.velocity.x = 0;
+            this.game.camera.gameOver = true;
         } else {
             if(this.state < 3) {
                 
@@ -193,7 +199,7 @@ class Ninja {
         this.game.entities.forEach(function (entity) {
             if (entity.BB && that.BB.collide(entity.BB)) {
                 if (that.velocity.y > 0) { // falling
-                    if ((entity instanceof Ground || entity instanceof Platform ) // landing
+                    if ((entity instanceof Platform || entity instanceof Door || entity instanceof LockedDoor) // landing
                         && (that.lastBB.bottom) <= entity.BB.top) { // was above last tick
                         that.y = entity.BB.top - V_OFFSET - 2*PARAMS.BLOCKWIDTH;
                         that.velocity.y = 0;
@@ -201,7 +207,7 @@ class Ninja {
                         if(that.state === 3) that.state = 0; // set state to idle
                         that.updateBB();
                     }
-                    else if (( entity instanceof Platform) // hit side
+                    else if (( entity instanceof Platform || entity instanceof Door || entity instanceof LockedDoor) // hit side
                         && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
                         if (that.velocity.x < 0) that.x = entity.BB.right - H_OFFSET; // move out of collision
                         else if (that.velocity.x >= 0) that.x = entity.BB.left - H_OFFSET - PARAMS.BLOCKWIDTH; // move out of collision
@@ -209,28 +215,30 @@ class Ninja {
                     }
                 }
                 else if (that.velocity.y <= 0) { // jumping or walking
-                    if ((entity instanceof Platform) // hit ceiling
+                    if ((entity instanceof Platform || entity instanceof Door || entity instanceof LockedDoor) // hit ceiling
                         && ((that.lastBB.top) >= entity.BB.bottom)) { // was below last tick                     
                         that.velocity.y = 0;
                         that.y = entity.BB.bottom - V_OFFSET;
 
                     }
-                    else if ((entity instanceof Platform) // hit side
+                    else if ((entity instanceof Platform || entity instanceof Door || entity instanceof LockedDoor) // hit side
                         && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
                         if (that.velocity.x < 0) that.x = entity.BB.right - H_OFFSET; // move out of collision
                         else if (that.velocity.x >= 0) that.x = entity.BB.left - H_OFFSET - PARAMS.BLOCKWIDTH; // move out of collision
                         that.velocity.x = 0;
                     }
                 }
-                if (entity instanceof Light) { // hit light
-                    that.caught = true;
-                    console.log("caught status:", that.caught);
+                if (entity instanceof Light || entity instanceof Laser) { // hit light
+                    if (entity.on) {
+                        that.caught = true;
+                    }
                 }
-                if ((entity instanceof Border) // hit side of canvas
-                    && (((that.lastBB.left) >= entity.BB.right) || ((that.lastBB.right) >= entity.BB.left))) { // was below last tick                     
-                    if (that.velocity.x < 0) that.x = entity.BB.right - H_OFFSET; // move out of collision
-                    else if (that.velocity.x >= 0) that.x = entity.BB.left - H_OFFSET - PARAMS.BLOCKWIDTH; // move out of collision
-                    that.velocity.x = 0;
+                if (entity instanceof Key) { // get key
+                    that.hasKey = true;
+                    that.key = entity.code;
+                    entity.removeFromWorld = true;
+                    that.game.camera.textBox = true;
+                    that.game.camera.message = "You got a key!";
                 }
             }
         });

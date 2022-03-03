@@ -10,11 +10,17 @@ ASSET_MANAGER.queueDownload("./grass_block.png");
 ASSET_MANAGER.queueDownload("./platforms.png");
 ASSET_MANAGER.queueDownload("./platform_block.png");
 ASSET_MANAGER.queueDownload("./iron_block.png");
+ASSET_MANAGER.queueDownload("./door_block.png");
+ASSET_MANAGER.queueDownload("./locked_door.png");
 ASSET_MANAGER.queueDownload("./background_block.png");
 ASSET_MANAGER.queueDownload("./metal_background.jpg");
 ASSET_MANAGER.queueDownload("./city_background.png");
 ASSET_MANAGER.queueDownload("./spotlight.png");
+ASSET_MANAGER.queueDownload("./laser.png");
 ASSET_MANAGER.queueDownload("./title_screen.png");
+ASSET_MANAGER.queueDownload("./button.png");
+ASSET_MANAGER.queueDownload("./key.png");
+ASSET_MANAGER.queueDownload("./text_box.png");
 
 // music
 ASSET_MANAGER.queueDownload("./music/HighClassHeist.mp3");
