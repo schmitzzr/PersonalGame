@@ -210,8 +210,9 @@ class SceneManager {
             if (this.deathTimer > 3) {
                 this.levelLoaded = true;
                 this.gameOver = false;
-                this.game.ninja.caught = false;
+                //this.game.ninja.caught = false;
                 this.timer = 0;
+                this.deathTimer = 0;
                 this.loadLevel(1, true, false);
             }
         }

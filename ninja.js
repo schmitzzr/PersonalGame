@@ -261,9 +261,10 @@ class Ninja {
         if (this.state !== 3) {
             if (this.crawl || this.stayCrawling) this.state = 2;
             else if (Math.abs(this.velocity.x) >= MIN_WALK) this.state = 1;
-            else if (this.caught) this.state = 4;
             else this.state = 0;
         } 
+
+        if (this.caught) this.state = 4;
 
         // update direction
         if (this.velocity.x < 0) this.facing = 1;
