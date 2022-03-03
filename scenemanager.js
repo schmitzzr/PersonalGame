@@ -14,10 +14,11 @@ class SceneManager {
         this.levelLabel = null;
 
         this.game.ninja = new Ninja(game, 0, 0);
+        this.checkpoint = {x: 3 * PARAMS.BLOCKWIDTH, y: 3 * PARAMS.BLOCKWIDTH, time: 0};
 
         this.levelLoaded = false;
         this.stopwatch = false;
-        this.timer = 0;
+        this.timer = this.checkpoint.time;
 
         //this.loadLevelOne(3 * PARAMS.BLOCKWIDTH, 3 * PARAMS.BLOCKWIDTH, false, true);
 
@@ -26,6 +27,9 @@ class SceneManager {
         this.textBoxTimer = 0;
 
         this.deathTimer = 0;
+
+        this.checkpointReached = true;
+        this.checkpointTimer = 0;
 
         this.gameOver = false;
 
@@ -52,6 +56,7 @@ class SceneManager {
         } else {
             switch(level) {
                 case 1: 
+                    this.timer = this.checkpoint.time;
                     this.loadLevelOne();
                     this.stopwatch = true;
                     break;
@@ -70,7 +75,7 @@ class SceneManager {
         //this.game.addEntity(new TextBox(this.game, "needKey"));
 
         const LEVEL_ONE_HEIGHT = PARAMS.BLOCKWIDTH;
-        const LEVEL_ONE_WIDTH = PARAMS.BLOCKWIDTH * 4;
+        const LEVEL_ONE_WIDTH = 58;
 
         //music
         ASSET_MANAGER.playAsset("./music/HighClassHeist.mp3");
@@ -78,7 +83,7 @@ class SceneManager {
         //borders
         this.game.addEntity(new Platform(this.game, 0, 0, LEVEL_ONE_WIDTH, 1, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new Platform(this.game, 0, 15, 11, 2, LEVEL_ONE_HEIGHT));
-        this.game.addEntity(new Platform(this.game, 13, 15, LEVEL_ONE_WIDTH - 13, 2, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 13, 15, LEVEL_ONE_WIDTH - 19, 2, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new Platform(this.game, 0, 31, LEVEL_ONE_WIDTH, 1, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new Platform(this.game, 0, 0, 1, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new Platform(this.game, LEVEL_ONE_WIDTH - 1, 0, 1, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
@@ -96,31 +101,58 @@ class SceneManager {
         this.game.addEntity(new Platform(this.game, 1, 21, 5, 1, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new Platform(this.game, 14, 21, 1, 1, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new Platform(this.game, 14, 26, 3, 1, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 27, 24, 17, 1, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 29, 17, 1, 6, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 41, 17, 1, 6, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 52, 15, 1, 14, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 55, 26, 1, 1, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 55, 21, 1, 1, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 55, 16, 1, 1, LEVEL_ONE_HEIGHT));
+        this.game.addEntity(new Platform(this.game, 45, 27, 2, 1, LEVEL_ONE_HEIGHT));
+        
+        this.game.addEntity(new Platform(this.game, 56, 1, 2, 30, LEVEL_ONE_HEIGHT));
 
 
         var trapdoor = new Door(this.game, 11, 15, 2, 1, LEVEL_ONE_HEIGHT, true);
         this.game.addEntity(trapdoor);
+
+        //checkpoints
+        this.game.addEntity(new Checkpoint(this.game, 11, 17, LEVEL_ONE_HEIGHT)); // first fall
+        this.game.addEntity(new Checkpoint(this.game, 27, 27, LEVEL_ONE_HEIGHT)); // just after first locked door
+        this.game.addEntity(new Checkpoint(this.game, 54, 12, LEVEL_ONE_HEIGHT)); // just after second locked door
         
         //lasers
         this.game.addEntity(new Laser(this.game, 1, 26, 7, LEVEL_ONE_HEIGHT, false, true, true));
         this.game.addEntity(new Laser(this.game, 5, 17, 4, LEVEL_ONE_HEIGHT, true, false, true));
+        this.game.addEntity(new Laser(this.game, 32, 17, 14, LEVEL_ONE_HEIGHT, true, true, true));
+        this.game.addEntity(new Laser(this.game, 35, 17, 14, LEVEL_ONE_HEIGHT, true, false, true));
+        this.game.addEntity(new Laser(this.game, 38, 17, 14, LEVEL_ONE_HEIGHT, true, true, true));
+        this.game.addEntity(new Laser(this.game, 53, 28, 3, LEVEL_ONE_HEIGHT, false, true, true));
 
         var laser1 = new Laser(this.game, 15, 21, 10, LEVEL_ONE_HEIGHT, false, true, false);
         var laser2 = new Laser(this.game, 17, 26, 8, LEVEL_ONE_HEIGHT, false, true, false);
-
+        var laser3 = new Laser(this.game, 30, 22, 11, LEVEL_ONE_HEIGHT, false, true, false);
+        
         this.game.addEntity(laser1);
         this.game.addEntity(laser2);
+        this.game.addEntity(laser3);
 
         //lights
 
         var light1 = new Light(this.game, 7, 5, 10, LEVEL_ONE_HEIGHT, true);
         var light2 = new Light(this.game, 14, 5, 10, LEVEL_ONE_HEIGHT, true);
+        var light3 = new Light(this.game, 47, 17, 14, LEVEL_ONE_HEIGHT, true);
 
         this.game.addEntity(light1);
         this.game.addEntity(light2);
+        this.game.addEntity(light3);
 
         this.game.addEntity(new Key(this.game, 14, 18, LEVEL_ONE_HEIGHT, "firstdoor"));
+        this.game.addEntity(new Key(this.game, 33, 18, LEVEL_ONE_HEIGHT, "seconddoor"));
+
+
         this.game.addEntity(new LockedDoor(this.game, 25, 27, LEVEL_ONE_HEIGHT, true, "firstdoor"));
+        this.game.addEntity(new LockedDoor(this.game, 53, 22, LEVEL_ONE_HEIGHT, true, "seconddoor"));
 
 
         
@@ -128,10 +160,11 @@ class SceneManager {
         //this.game.addEntity(new Border(this.game, 0, PARAMS.CANVAS_HEIGHT - LEVEL_HEIGHT, PARAMS.BLOCKWIDTH, LEVEL_HEIGHT));
         //this.game.addEntity(new Border(this.game, PARAMS.CANVAS_WIDTH - PARAMS.BLOCKWIDTH, PARAMS.CANVAS_HEIGHT - LEVEL_HEIGHT, PARAMS.BLOCKWIDTH, LEVEL_HEIGHT));
 
-        this.game.addEntity(new Ninja(this.game, 3*PARAMS.BLOCKWIDTH, 3 * PARAMS.BLOCKWIDTH));
+        this.game.addEntity(new Ninja(this.game, this.checkpoint.x, this.checkpoint.y));
 	    
         this.game.addEntity(new Button(this.game, 23, 12, LEVEL_ONE_HEIGHT, true, light1, light2, trapdoor));
         this.game.addEntity(new Button(this.game, 2, 18, LEVEL_ONE_HEIGHT, true, laser1, laser2));
+        this.game.addEntity(new Button(this.game, 27, 19, LEVEL_ONE_HEIGHT, true, laser3, light3));
 
         //this.game.addEntity(new Background(this.game, 0, 0, LEVEL_ONE_WIDTH, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new MainBackground(this.game, 0, 0, LEVEL_ONE_WIDTH, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
@@ -182,12 +215,17 @@ class SceneManager {
         this.updateAudio();
         PARAMS.DEBUG = document.getElementById("debug").checked;
 
-        if (this.game.click && this.game.click.y > 14 * PARAMS.BLOCKWIDTH && this.game.click.y < 14.5 * PARAMS.BLOCKWIDTH) {
-            this.title = false;
-            if (!this.levelLoaded) {
-                this.levelLoaded = true;
-                //his.game.ninja = new Ninja(this.game, 3*PARAMS.BLOCKWDITH, 3*PARAMS.BLOCKWIDTH);
-                this.loadLevel(1, 3 * PARAMS.BLOCKWIDTH, 3 * PARAMS.BLOCKWIDTH, true, false);
+        if (this.title) {
+            if (this.game.click && this.game.click.y > 14 * PARAMS.BLOCKWIDTH && this.game.click.y < 14.5 * PARAMS.BLOCKWIDTH) {
+                this.title = false;
+                if (!this.levelLoaded) {
+                    this.levelLoaded = true;
+                    this.checkpoint.x = 3 * PARAMS.BLOCKWIDTH;
+                    this.checkpoint.y = 3 * PARAMS.BLOCKWIDTH;
+                    this.checkpoint.time = 0;
+                    //his.game.ninja = new Ninja(this.game, 3*PARAMS.BLOCKWDITH, 3*PARAMS.BLOCKWIDTH);
+                    this.loadLevel(1, true, false);
+                }
             }
         }
 
@@ -200,6 +238,14 @@ class SceneManager {
             }
         }
 
+        if (this.checkpointReached) {
+            this.checkpointTimer += this.game.clockTick;
+            if (this.checkpointTimer > 2.5) {
+                this.checkpointReached = false;
+                this.checkpointTimer = 0;
+            }
+        }
+
         if(this.stopwatch) {
             this.timer += this.game.clockTick;
         }
@@ -207,11 +253,11 @@ class SceneManager {
         if (this.game.ninja.caught) {
             ASSET_MANAGER.pauseBackgroundMusic();
             this.deathTimer += this.game.clockTick;
+            this.stopwatch = false;
             if (this.deathTimer > 3) {
                 this.levelLoaded = true;
                 this.gameOver = false;
                 //this.game.ninja.caught = false;
-                this.timer = 0;
                 this.deathTimer = 0;
                 this.loadLevel(1, true, false);
             }
@@ -237,6 +283,7 @@ class SceneManager {
             }
             ctx.fillText("START", 16 * PARAMS.BLOCKWIDTH, 14.5*PARAMS.BLOCKWIDTH);
         } else {
+            ctx.fillStyle = "black";
             ctx.font = PARAMS.BLOCKWIDTH * 2/3 + 'px "Press Start 2P"';
             ctx.fillText(this.timerCalc(this.timer), 16 * PARAMS.BLOCKWIDTH, 1 * PARAMS.BLOCKWIDTH);
         }
@@ -248,6 +295,13 @@ class SceneManager {
             ctx.font = PARAMS.BLOCKWIDTH * 0.4 + 'px "Press Start 2P"';
 
             ctx.fillText(this.message, 16 * PARAMS.BLOCKWIDTH, 675);
+        }
+
+        if (!this.title && this.checkpointReached) {
+            ctx.fillStyle = "black";
+            ctx.font = PARAMS.BLOCKWIDTH * 0.4 + 'px "Press Start 2P"';
+
+            ctx.fillText("Checkpoint reached", 16 * PARAMS.BLOCKWIDTH, 2*PARAMS.BLOCKWIDTH);
         }
 
 
