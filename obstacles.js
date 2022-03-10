@@ -108,6 +108,30 @@ class Key {
     };
 };
 
+class Money {
+    constructor(game, x, y, levelHeight) {
+        Object.assign(this, { game, x, levelHeight});
+
+        this.y = PARAMS.CANVAS_HEIGHT/PARAMS.BLOCKWIDTH - (this.levelHeight - y);
+
+        this.spritesheet = ASSET_MANAGER.getAsset("./money.png");
+
+        this.BB = new BoundingBox(this.x * PARAMS.BLOCKWIDTH, this.y * PARAMS.BLOCKWIDTH, 90, 128);
+    };
+
+    update() {
+
+    };
+
+    draw(ctx) {
+
+        ctx.drawImage(this.spritesheet, 0,0, 560, 794, 
+            this.x * PARAMS.BLOCKWIDTH - this.game.camera.x, this.y * PARAMS.BLOCKWIDTH - this.game.camera.y, 
+            90, 128);
+
+    };
+};
+
 class Checkpoint {
     constructor(game, x, y, levelHeight) {
         Object.assign(this, { game, x, levelHeight});

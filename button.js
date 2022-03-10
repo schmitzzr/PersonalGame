@@ -38,6 +38,8 @@ class Button {
                         link.closed = true;
                     } else if (link instanceof Laser) {
                         link.flicker = false;
+                        link.on = true;
+                        link.flickerTimer = 2;
                     }
                 } else {
                     if (link instanceof Light) {

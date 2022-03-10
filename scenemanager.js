@@ -21,6 +21,7 @@ class SceneManager {
         this.timer = this.checkpoint.time;
 
         //this.loadLevelOne(3 * PARAMS.BLOCKWIDTH, 3 * PARAMS.BLOCKWIDTH, false, true);
+        this.winningMusic = true;
 
         this.textBox = false;
         this.message = null;
@@ -137,6 +138,21 @@ class SceneManager {
         this.game.addEntity(laser2);
         this.game.addEntity(laser3);
 
+        var endLaser1 = new Laser(this.game, 36, 1, 14, LEVEL_ONE_HEIGHT, true, true, false);  // 2, 3, 6 go to endButton1
+        var endLaser2 = new Laser(this.game, 37, 1, 14, LEVEL_ONE_HEIGHT, true, true, false);  // 4 goes to endButton2
+        var endLaser3 = new Laser(this.game, 38, 1, 14, LEVEL_ONE_HEIGHT, true, true, false);  // 1, 5 goes to endButton3
+        var endLaser4 = new Laser(this.game, 39, 1, 14, LEVEL_ONE_HEIGHT, true, true, false);
+        var endLaser5 = new Laser(this.game, 40, 1, 14, LEVEL_ONE_HEIGHT, true, true, false);
+        var endLaser6 = new Laser(this.game, 41, 1, 14, LEVEL_ONE_HEIGHT, true, true, false);
+
+        this.game.addEntity(endLaser1);
+        this.game.addEntity(endLaser2);
+        this.game.addEntity(endLaser3);
+        this.game.addEntity(endLaser4);
+        this.game.addEntity(endLaser5);
+        this.game.addEntity(endLaser6);
+
+
         //lights
 
         var light1 = new Light(this.game, 7, 5, 10, LEVEL_ONE_HEIGHT, true);
@@ -162,9 +178,19 @@ class SceneManager {
 
         this.game.addEntity(new Ninja(this.game, this.checkpoint.x, this.checkpoint.y));
 	    
+        //buttons
         this.game.addEntity(new Button(this.game, 23, 12, LEVEL_ONE_HEIGHT, true, light1, light2, trapdoor));
         this.game.addEntity(new Button(this.game, 2, 18, LEVEL_ONE_HEIGHT, true, laser1, laser2));
         this.game.addEntity(new Button(this.game, 27, 19, LEVEL_ONE_HEIGHT, true, laser3, light3));
+
+        this.game.addEntity(new Button(this.game, 45, 9, LEVEL_ONE_HEIGHT, false, null));
+        this.game.addEntity(new Button(this.game, 48, 9, LEVEL_ONE_HEIGHT, true, endLaser2, endLaser3, endLaser6)); //endButton1
+        this.game.addEntity(new Button(this.game, 51, 9, LEVEL_ONE_HEIGHT, false, null));
+        this.game.addEntity(new Button(this.game, 45, 12, LEVEL_ONE_HEIGHT, true, endLaser4)); //endButton2
+        this.game.addEntity(new Button(this.game, 48, 12, LEVEL_ONE_HEIGHT, false, endLaser1, endLaser5)); //endButton3
+        this.game.addEntity(new Button(this.game, 51, 12, LEVEL_ONE_HEIGHT, true, null));
+
+        this.game.addEntity(new Money(this.game, 29, 11, LEVEL_ONE_HEIGHT));
 
         //this.game.addEntity(new Background(this.game, 0, 0, LEVEL_ONE_WIDTH, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
         this.game.addEntity(new MainBackground(this.game, 0, 0, LEVEL_ONE_WIDTH, LEVEL_ONE_HEIGHT, LEVEL_ONE_HEIGHT));
@@ -227,6 +253,16 @@ class SceneManager {
                     this.loadLevel(1, true, false);
                 }
             }
+        } else if (this.win) {
+            ASSET_MANAGER.pauseBackgroundMusic();
+            this.clearEntities();
+            this.game.addEntity(new WinningScreen(this.game, this.timer));
+            if ((this.game.click && this.game.click.y > 21 * PARAMS.BLOCKWIDTH && this.game.click.y < 22 * PARAMS.BLOCKWIDTH)) {
+                this.checkpoint = {x: 3 * PARAMS.BLOCKWIDTH, y: 3 * PARAMS.BLOCKWIDTH, time: 0};
+                this.win = false;
+                this.title = true;
+                this.levelLoaded = false;
+            }
         }
 
         if (this.textBox) {
@@ -246,7 +282,7 @@ class SceneManager {
             }
         }
 
-        if(this.stopwatch) {
+        if(this.stopwatch && !this.win) {
             this.timer += this.game.clockTick;
         }
 
@@ -266,7 +302,7 @@ class SceneManager {
         let midpoint = {x : PARAMS.CANVAS_WIDTH / 2, y: PARAMS.CANVAS_HEIGHT / 2};
 
         this.y = this.game.ninja.y - midpoint.y - 3 * PARAMS.BLOCKWIDTH;
-        this.x = this.game.ninja.x - midpoint.y + 4 * PARAMS.BLOCKWIDTH;
+        this.x = this.game.ninja.x - midpoint.x + 4 * PARAMS.BLOCKWIDTH;
 
     };
 
@@ -282,6 +318,17 @@ class SceneManager {
                 ctx.fillText("START", 16 * PARAMS.BLOCKWIDTH, 14.5*PARAMS.BLOCKWIDTH);
             }
             ctx.fillText("START", 16 * PARAMS.BLOCKWIDTH, 14.5*PARAMS.BLOCKWIDTH);
+        } else if (!this.title && this.win) {           
+            ctx.font = PARAMS.BLOCKWIDTH * 0.75 + 'px "Press Start 2P"';
+            
+            if ((this.game.mouse && this.game.mouse.y > 21 * PARAMS.BLOCKWIDTH && this.game.mouse.y < 22 * PARAMS.BLOCKWIDTH)) {
+                ctx.fillStyle = "red";
+                ctx.fillText("RETURN TO MAIN MENU", 16 * PARAMS.BLOCKWIDTH, 22*PARAMS.BLOCKWIDTH);
+            } else  {
+                ctx.fillStyle = "white";
+                ctx.fillText("RETURN TO MAIN MENU", 16 * PARAMS.BLOCKWIDTH, 22*PARAMS.BLOCKWIDTH);
+            }
+
         } else {
             ctx.fillStyle = "black";
             ctx.font = PARAMS.BLOCKWIDTH * 2/3 + 'px "Press Start 2P"';

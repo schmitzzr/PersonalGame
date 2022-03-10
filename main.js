@@ -20,16 +20,18 @@ ASSET_MANAGER.queueDownload("./laser.png");
 ASSET_MANAGER.queueDownload("./title_screen.png");
 ASSET_MANAGER.queueDownload("./button.png");
 ASSET_MANAGER.queueDownload("./key.png");
+ASSET_MANAGER.queueDownload("./money.png");
 ASSET_MANAGER.queueDownload("./text_box.png");
 
 // music
 ASSET_MANAGER.queueDownload("./music/HighClassHeist.mp3");
 ASSET_MANAGER.queueDownload("./music/LastCall.mp3");
+ASSET_MANAGER.queueDownload("./music/Credits.mp3");
 
 
 ASSET_MANAGER.downloadAll(() => {
 	
-	//ASSET_MANAGER.autoRepeat("./music/HighClassHeist.mp3");
+	ASSET_MANAGER.autoRepeat("./music/HighClassHeist.mp3");
 
 	PARAMS.BLOCKWIDTH = PARAMS.BITWIDTH * PARAMS.SCALE;
 

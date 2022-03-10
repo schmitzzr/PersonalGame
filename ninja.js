@@ -240,6 +240,9 @@ class Ninja {
                     that.game.camera.textBox = true;
                     that.game.camera.message = "You got a key!";
                 }
+                if (entity instanceof Money) {
+                    if (that.interact) that.game.camera.win = true;
+                }
             }
         });
 
